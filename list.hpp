@@ -9,6 +9,15 @@
 #include <iostream>
 #include <iterator> //std::bidirectional_iterator_tag
 #include <cassert>  //assert
+#include <algorithm>
+#include <chrono>
+#include <cstdio>
+#include <cstring>
+#include <deque>
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <ncurses.h>
 
 
 template <typename T>
@@ -17,48 +26,101 @@ class List {
 public:
 
   //EFFECTS:  returns true if the list is empty
-  bool empty() const;
+  bool empty() const {
+    return count == 0;
+  }
 
   //EFFECTS: returns the number of elements in this List
   //HINT:    Traversing a list is really slow. Instead, keep track of the size
   //         with a private member variable. That's how std::list does it.
-  int size() const;
+  int size() const {
+    return count;
+  }
 
   //REQUIRES: list is not empty
   //EFFECTS: Returns the first element in the list by reference
-  T & front();
+  T & front() {
+    return first->datum;
+  }
 
   //REQUIRES: list is not empty
   //EFFECTS: Returns the last element in the list by reference
-  T & back();
+  T & back() {
+    return last->datum;
+  }
 
   //EFFECTS:  inserts datum into the front of the list
-  void push_front(const T &datum);
+  void push_front(const T &datum) {
+    Node* newNode;
+    newNode->datum = datum;
+
+
+    if(empty()) {
+      first = last = newNode;
+    }
+    else {
+      first->prev = newNode;
+      newNode->next = first;
+      newNode->prev = nullptr;
+    }
+    count++;
+  }
 
   //EFFECTS:  inserts datum into the back of the list
-  void push_back(const T &datum);
+  void push_back(const T &datum) {
+    Node* newNode = new Node;
+    newNode->datum = datum;
+    if(empty()) {
+      first = last = newNode;
+    }
+    else {
+      last->next = newNode;
+      newNode->prev = last;
+      newNode->next = nullptr;
+    }
+    count++;
+  }
 
   //REQUIRES: list is not empty
   //MODIFIES: may invalidate list iterators
   //EFFECTS:  removes the item at the front of the list
-  void pop_front();
+  void pop_front() {
+    first = nullptr;
+    first = first->next;
+  }
 
   //REQUIRES: list is not empty
   //MODIFIES: may invalidate list iterators
   //EFFECTS:  removes the item at the back of the list
-  void pop_back();
+  void pop_back() {
+    last = nullptr;
+    last = last->prev;
+  }
 
   //MODIFIES: may invalidate list iterators
   //EFFECTS:  removes all items from the list
-  void clear();
+  void clear() {
+    while(!empty()) {
+      pop_front();
+    }
+  }
 
   // You should add in a default constructor, destructor, copy constructor,
   // and overloaded assignment operator, if appropriate. If these operations
   // will work correctly without defining these, you should omit them. A user
   // of the class must be able to create, copy, assign, and destroy Lists.
+  List() : Node(nullptr);
+
+  // List& operator =(Node node) {
+    
+  // }
+  
+  List(const List& copy) : Node(copy) {}
 
 private:
   //a private type
+  int count;
+
   struct Node {
     Node *next;
     Node *prev;
@@ -77,8 +139,7 @@ public:
   class Iterator {
     //OVERVIEW: Iterator interface to List
 
-    // Add a default constructor here. The default constructor must set both
-    // pointer members to null pointers.
+    Iterator Iterator() : List::first(nullptr), List::last(nullptr){}
 
 
 
@@ -158,6 +219,7 @@ public:
 
 
     // add any friend declarations here
+    friend List;
 
 
     // construct an Iterator at a specific position in the given List
@@ -167,10 +229,14 @@ public:
   ////////////////////////////////////////
 
   // return an Iterator pointing to the first element
-  Iterator begin() const;
+  Iterator begin() const {
+    return first;
+  }
 
   // return an Iterator pointing to "past the end"
-  Iterator end() const;
+  Iterator end() const {
+    return last->next;
+  }
 
   //REQUIRES: i is a valid, dereferenceable iterator associated with this list
   //MODIFIES: may invalidate other list iterators
