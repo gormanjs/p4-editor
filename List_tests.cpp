@@ -208,18 +208,21 @@ TEST(test_assignment_operator) {
     ASSERT_TRUE(list5.back() == 8);
 
     //self assignment
-    //***Causes issue in compiler for now
-    // List<int> list7;
+    List<int> list7;
 
-    // list7.push_back(1);
-    // list7.push_back(2);
-    // list7.push_back(3);
-    // list7.push_back(4);
+    list7.push_back(1);
+    list7.push_back(2);
+    list7.push_back(3);
+    list7.push_back(4);
 
-    // list7 = list7;
-    // ASSERT_TRUE(list7.size() == 4);
-    // ASSERT_TRUE(list7.front() == 1);
-    // ASSERT_TRUE(list7.back() == 4);
+    List<int> copy_list7 = list7;
+
+    list7 = copy_list7;
+
+    ASSERT_TRUE(list7 == copy_list7);
+    ASSERT_TRUE(list7.size() == 4);
+    ASSERT_TRUE(list7.front() == 1);
+    ASSERT_TRUE(list7.back() == 4);
 
 }
 
