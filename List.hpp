@@ -97,7 +97,9 @@ public:
       Node *nextFirst = first->next;
       //deletefirst;
       first = nextFirst;
+      if (first){
       first->prev = nullptr;
+      }
     }
     track--;
   }
@@ -128,8 +130,12 @@ public:
   {
     while (!empty())
     {
-      pop_front();
+      Node* temp = first;
+      first = first->next;
+      delete temp;
     }
+    last = nullptr;
+    track = 0;
   }
 
   // You should add in a default constructor, destructor, copy constructor,
@@ -160,22 +166,22 @@ public:
 
 // begin and end access private variables from List
 // we need to add friend so that this operator has access as well
-// friend bool operator==(const List<T>& lhs, const List<T>& rhs) {
-//     if (lhs.size() != rhs.size()) {
-//     return false;
-//   }
+friend bool operator==(const List<T>& lhs, const List<T>& rhs) {
+    if (lhs.size() != rhs.size()) {
+    return false;
+  }
 
-//   auto it1 = lhs.begin();
-//   auto it2 = rhs.begin();
-//   while (it1 != lhs.end()) {
-//     if (*it1 != *it2) {
-//   return false;
-//   }
-//   ++it1;
-//   ++it2;
-//   }
-//   return true;
-// }
+  auto it1 = lhs.begin();
+  auto it2 = rhs.begin();
+  while (it1 != lhs.end()) {
+    if (*it1 != *it2) {
+  return false;
+  }
+  ++it1;
+  ++it2;
+  }
+  return true;
+}
 
 private:
   // to private type
@@ -198,23 +204,6 @@ private:
       push_back(p->datum);
     }
   }
-
-friend bool operator==(const List<T>& lhs, const List<T>& rhs) {
-    if (lhs.size() != rhs.size()) {
-    return false;
-  }
-
-  auto it1 = lhs.begin();
-  auto it2 = rhs.begin();
-  while (it1 != lhs.end()) {
-    if (*it1 != *it2) {
-  return false;
-  }
-  ++it1;
-  ++it2;
-  }
-  return true;
-}
 
   Node *first; // points to first Node in list, or nullptr if list is empty
   Node *last; // points to last Node in list, or nullptr if list is empty
@@ -386,10 +375,18 @@ public:
     Node* current = i.node_ptr;
     Iterator next(this, current->next);
 
+    //return end if current is null
+    if(!current){
+      return next;
+    }
+    
+    // if the previous of current exists
     if (current->prev){
+      // the previous's next is the currents next
       current->prev->next = current->next;
     }
-    else {
+    else { // if the previous of current doesnt exist
+      // the current's next is the start
       first = current->next;
     }
     
@@ -447,5 +444,5 @@ public:
 // may add the Big Three if needed. Do add the public member functions for
 // Iterator.
 
-// Do not remove this. Write all your code above this line.
+//Do not remove this. Write all your code above this line.
 #endif 

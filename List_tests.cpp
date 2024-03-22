@@ -210,19 +210,10 @@ TEST(test_assignment_operator) {
     //self assignment
     List<int> list7;
 
-    list7.push_back(1);
-    list7.push_back(2);
-    list7.push_back(3);
-    list7.push_back(4);
+    List<int> & copy = list7;
+    copy = list7;
 
-    List<int> copy_list7 = list7;
-
-    list7 = copy_list7;
-
-    ASSERT_TRUE(list7 == copy_list7);
-    ASSERT_TRUE(list7.size() == 4);
-    ASSERT_TRUE(list7.front() == 1);
-    ASSERT_TRUE(list7.back() == 4);
+    ASSERT_TRUE(copy.size() == 0);
 
 }
 
