@@ -12,7 +12,7 @@
 #include <list>
 #include <string>
 // Uncomment the following line to use your List implementation
-// #include "List.hpp"
+//#include "List.hpp"
 
 class TextBuffer {
   // Comment out the following two lines and uncomment the two below
@@ -25,7 +25,7 @@ class TextBuffer {
 public:
   //EFFECTS: Creates a new editor with an empty text buffer, with the
   //         current position at row 1 and column 0.
-  TextBuffer();
+  TextBuffer() : data(), cursor(), row(1), column(0), index(0) {}
 
   //MODIFIES: *this
   //EFFECTS:  Moves the cursor one position forward and updates the
@@ -34,7 +34,25 @@ public:
   //          true if the position changed, or false if it did not
   //          (i.e. if the cursor was already at the end of the
   //          buffer).
-  bool forward();
+  bool forward() {
+    if(*cursor == data.back()) {
+      return false;
+    }
+    else if(*cursor == '\n') {
+      cursor++;
+      column = 0;
+      index++;
+      row++;
+      return true;
+    }
+    else {
+      cursor++;
+      column++;
+      index++;
+      return true;
+    }
+  }
+  
 
   //MODIFIES: *this
   //EFFECTS:  Moves the cursor one position backward and updates the
@@ -51,7 +69,8 @@ public:
   //MODIFIES: *this
   //EFFECTS:  Inserts a character in the buffer at the cursor and
   //          updates the current row and column.
-  void insert(char c);
+  void insert(char c) {
+  }
 
   //MODIFIES: *this
   //EFFECTS:  Deletes the character from the buffer that is at cursor.
@@ -63,13 +82,18 @@ public:
   //MODIFIES: *this
   //EFFECTS:  Moves the cursor to the start of the current row (column
   //          0).
-  void move_to_row_start();
+  void move_to_row_start() {
+    column = 0;
+  }
 
   //MODIFIES: *this
   //EFFECTS:  Moves the cursor to the end of the current row (the
   //          newline character that ends the row, or the end of the
   //          buffer if the row is the last one in the buffer).
-  void move_to_row_end();
+  void move_to_row_end() {
+    // if()
+    // column = 
+  }
 
   //REQUIRES: new_column >= 0
   //MODIFIES: *this
@@ -100,18 +124,26 @@ public:
   bool down();
 
   //EFFECTS:  Returns whether the cursor is at the end of the buffer.
-  bool is_at_end() const;
+  bool is_at_end() const {
+    return index == this->size();
+  }
 
   //REQUIRES: the cursor is not at the end of the buffer
   //EFFECTS:  Returns the character at the current cursor
-  char data_at_cursor() const;
+  char data_at_cursor() const {
+    return *cursor;
+  }
 
   //EFFECTS:  Returns the row of the character at the current cursor.
-  int get_row() const;
+  int get_row() const {
+    return row;
+  }
 
   //EFFECTS:  Returns the column of the character at the current
   //          cursor.
-  int get_column() const;
+  int get_column() const {
+    return column;
+  }
 
   //EFFECTS:  Returns the index of the character at the current cursor
   //          with respect to the entire contents. If the cursor is at
@@ -149,7 +181,12 @@ private:
   //         row.
   //NOTE: This does not assume that the "column" member variable has
   //      a correct value (i.e. the second INVARIANT can be broken).
-  int compute_column() const;
+  int compute_column() const {
+    int place = 0;
+    for(int run = 0; run < index; run++) {
+      //make copy of list or iterator and count the '\n'
+      if(data_at_cursor())
+    }
 };
 
 #endif // TEXTBUFFER_HPP
