@@ -35,7 +35,7 @@ public:
   //          (i.e. if the cursor was already at the end of the
   //          buffer).
   bool forward() {
-    if(*cursor == data.back()) {
+    if(cursor == data.end()) {
       return false;
     }
     else if(*cursor == '\n') {
@@ -46,9 +46,9 @@ public:
       return true;
     }
     else {
-      cursor++;
+      //cursor++;
       column++;
-      index++;
+      //index++;
       return true;
     }
   }
@@ -64,7 +64,22 @@ public:
   //HINT: Implement and use the private compute_column() member
   //      function to compute the column when moving left from the
   //      beginning of a line to the end of the previous one.
-  bool backward();
+  bool backward() {
+    if (cursor == data.begin()){
+      return false;
+    }
+    --cursor;
+
+    if (*cursor == '\n'){
+      row--;
+      column = compute_column();
+    }
+    else {
+      column--;
+    }
+
+    return true;
+  }
 
   //MODIFIES: *this
   //EFFECTS:  Inserts a character in the buffer at the cursor and
@@ -91,8 +106,17 @@ public:
   //          newline character that ends the row, or the end of the
   //          buffer if the row is the last one in the buffer).
   void move_to_row_end() {
-    // if()
-    // column = 
+    
+    if (cursor == data.end()){
+      return;
+    }
+
+    while (*cursor != '\n' && cursor != data.end()){
+      index++;
+      row++;
+      column++;
+    }
+
   }
 
   //REQUIRES: new_column >= 0
@@ -100,7 +124,16 @@ public:
   //EFFECTS:  Moves the cursor to the given column in the current row,
   //          or to the end of the row if the row does not have that
   //          many columns.
-  void move_to_column(int new_column);
+  void move_to_column(int new_column){
+    assert(new_column >= 0);
+
+    if (column < new_column){
+      move_to_row_end();
+    }
+
+    
+
+  }
 
   //MODIFIES: *this
   //EFFECTS:  Moves the cursor to the previous row, retaining the
@@ -154,7 +187,9 @@ public:
   int get_index() const;
 
   //EFFECTS:  Returns the number of characters in the buffer.
-  int size() const;
+  int size() const{
+    return data.size();
+  }
 
   //EFFECTS:  Returns the contents of the text buffer as a string.
   //HINT: Implement this using the string constructor that takes a
@@ -182,11 +217,13 @@ private:
   //NOTE: This does not assume that the "column" member variable has
   //      a correct value (i.e. the second INVARIANT can be broken).
   int compute_column() const {
-    int place = 0;
-    for(int run = 0; run < index; run++) {
-      //make copy of list or iterator and count the '\n'
-      if(data_at_cursor())
+    Iterator tempCursor = cursor;
+    int tempColumn = 0;
+    while (tempCursor != data.begin() && *(--tempCursor) != '\n'){
+      tempColumn++;
     }
-};
+    return tempColumn;
+}
 
-#endif // TEXTBUFFER_HPP
+};
+#endif  //TEXTBUFFER_HPP
