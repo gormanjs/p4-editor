@@ -181,10 +181,19 @@ TEST(test_equals_equals_operator){
     ASSERT_TRUE(empty_it1 == empty_it2);
 
     //default constructed iterator
-    List<int>::Iterator default_it1;
-    List<int>::Iterator default_it2;
+    List<int> list9;
+    list9.push_back(1);
+    list9.push_back(2);
+    list9.push_back(3);
 
-    ASSERT_TRUE(default_it1 == default_it2);
+    List<int>::Iterator default_it;
+    List<int>::Iterator it_begin = list9.begin();
+    List<int>::Iterator it_end = list9.end();
+
+    ASSERT_FALSE(default_it == it_begin);
+    ASSERT_FALSE(default_it == it_end);
+
+    ASSERT_TRUE(default_it == default_it);
 }
 
 TEST(test_assignment_operator) {
@@ -310,6 +319,11 @@ TEST(test_insert){
     List<int>::Iterator inserted = list.insert(it, 7);
     ASSERT_TRUE(list.size() == 4);
     ASSERT_TRUE(*inserted == 7);
+
+    //verify it updated correctly
+    vector<int> expected_list = {1, 7, 2, 3};
+    vector<int> actual_list(list.begin(), list.end());
+    ASSERT_EQUAL(expected_list, actual_list);
 
     //insert in the front
     it = list.begin();
