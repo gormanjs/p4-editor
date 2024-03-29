@@ -131,7 +131,12 @@ public:
       move_to_row_end();
     }
 
-    
+    else {
+      int amount = column - new_column;
+      for (int i = 0; i < amount; i++){
+        backward();
+      }
+    }
 
   }
 

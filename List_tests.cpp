@@ -155,6 +155,38 @@ TEST(test_iterators) {
     ASSERT_EQUAL(elements, std::vector<int>({1, 2, 3}));
 }
 
+TEST(test_equals_equals_operator){
+    List<int> list;
+    list.push_back(1);
+    list.push_back(2);
+    list.push_back(3);
+
+    List<int>::Iterator it1 = list.begin();
+    List<int>::Iterator it2 = list.begin();
+    List<int>::Iterator it3 = list.begin();
+    ++it3;
+
+    ASSERT_TRUE(it1 == it2);
+
+    ASSERT_FALSE(it1 == it3);
+
+    List<int>::Iterator end_it = list.end();
+    ASSERT_FALSE(it1 == end_it);
+
+    ASSERT_TRUE(end_it == list.end());
+
+    List<int> empty_list;
+    List<int>::Iterator empty_it1 = empty_list.begin();
+    List<int>::Iterator empty_it2 = empty_list.begin();
+    ASSERT_TRUE(empty_it1 == empty_it2);
+
+    //default constructed iterator
+    List<int>::Iterator default_it1;
+    List<int>::Iterator default_it2;
+
+    ASSERT_TRUE(default_it1 == default_it2);
+}
+
 TEST(test_assignment_operator) {
     
     //same size
@@ -209,11 +241,23 @@ TEST(test_assignment_operator) {
 
     //self assignment
     List<int> list7;
+    list7.push_back(1);
+    list7.push_back(2);
+    list7.push_back(3);
 
+    //self assign filled list
     List<int> & copy = list7;
     copy = list7;
 
-    ASSERT_TRUE(copy.size() == 0);
+    ASSERT_TRUE(copy.size() == 3);
+    ASSERT_TRUE(copy.front() == 1);
+    ASSERT_TRUE(copy.back() == 3);
+
+    //self assign empty list
+    List<int> list8;
+    List<int> & copy8 = list8;
+    copy8 = list8;
+    ASSERT_TRUE(copy8.size() == 0);
 
 }
 
