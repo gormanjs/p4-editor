@@ -88,6 +88,13 @@ TEST(test_pop_back){
 
     ASSERT_TRUE(list.size() == 4);
     ASSERT_TRUE(list.back() == 7);
+
+    // 1 element
+    List <int> list1;
+    list1.push_back(1);
+    list1.pop_back();
+    ASSERT_TRUE(list.size() == 0);
+    
 }
 
 TEST(test_clear){

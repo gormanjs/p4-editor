@@ -25,7 +25,7 @@ class TextBuffer {
 public:
   //EFFECTS: Creates a new editor with an empty text buffer, with the
   //         current position at row 1 and column 0.
-  TextBuffer() : data(), cursor(), row(1), column(0), index(0) {}
+  TextBuffer();
 
   //MODIFIES: *this
   //EFFECTS:  Moves the cursor one position forward and updates the
@@ -34,24 +34,7 @@ public:
   //          true if the position changed, or false if it did not
   //          (i.e. if the cursor was already at the end of the
   //          buffer).
-  bool forward() {
-    if(cursor == data.end()) {
-      return false;
-    }
-    else if(*cursor == '\n') {
-      cursor++;
-      column = 0;
-      index++;
-      row++;
-      return true;
-    }
-    else {
-      //cursor++;
-      column++;
-      //index++;
-      return true;
-    }
-  }
+  bool forward() ;
   
 
   //MODIFIES: *this
@@ -64,28 +47,12 @@ public:
   //HINT: Implement and use the private compute_column() member
   //      function to compute the column when moving left from the
   //      beginning of a line to the end of the previous one.
-  bool backward() {
-    if (cursor == data.begin()){
-      return false;
-    }
-    --cursor;
-
-    if (*cursor == '\n'){
-      row--;
-      column = compute_column();
-    }
-    else {
-      column--;
-    }
-
-    return true;
-  }
+  bool backward() ;
 
   //MODIFIES: *this
   //EFFECTS:  Inserts a character in the buffer at the cursor and
   //          updates the current row and column.
-  void insert(char c) {
-  }
+  void insert(char c) ;
 
   //MODIFIES: *this
   //EFFECTS:  Deletes the character from the buffer that is at cursor.
@@ -97,48 +64,20 @@ public:
   //MODIFIES: *this
   //EFFECTS:  Moves the cursor to the start of the current row (column
   //          0).
-  void move_to_row_start() {
-    column = 0;
-  }
+  void move_to_row_start() ;
 
   //MODIFIES: *this
   //EFFECTS:  Moves the cursor to the end of the current row (the
   //          newline character that ends the row, or the end of the
   //          buffer if the row is the last one in the buffer).
-  void move_to_row_end() {
-    
-    if (cursor == data.end()){
-      return;
-    }
-
-    while (*cursor != '\n' && cursor != data.end()){
-      index++;
-      row++;
-      column++;
-    }
-
-  }
+  void move_to_row_end() ;
 
   //REQUIRES: new_column >= 0
   //MODIFIES: *this
   //EFFECTS:  Moves the cursor to the given column in the current row,
   //          or to the end of the row if the row does not have that
   //          many columns.
-  void move_to_column(int new_column){
-    assert(new_column >= 0);
-
-    if (column < new_column){
-      move_to_row_end();
-    }
-
-    else {
-      int amount = column - new_column;
-      for (int i = 0; i < amount; i++){
-        backward();
-      }
-    }
-
-  }
+  void move_to_column(int new_column);
 
   //MODIFIES: *this
   //EFFECTS:  Moves the cursor to the previous row, retaining the
@@ -148,6 +87,7 @@ public:
   //          Does nothing if the cursor is already in the first row.
   //          Returns true if the position changed, or false if it did
   //          not (i.e. if the cursor was already in the first row).
+
   bool up();
 
   //MODIFIES: *this
@@ -162,26 +102,18 @@ public:
   bool down();
 
   //EFFECTS:  Returns whether the cursor is at the end of the buffer.
-  bool is_at_end() const {
-    return index == this->size();
-  }
+  bool is_at_end() const ;
 
   //REQUIRES: the cursor is not at the end of the buffer
   //EFFECTS:  Returns the character at the current cursor
-  char data_at_cursor() const {
-    return *cursor;
-  }
+  char data_at_cursor() const ;
 
   //EFFECTS:  Returns the row of the character at the current cursor.
-  int get_row() const {
-    return row;
-  }
+  int get_row() const ;
 
   //EFFECTS:  Returns the column of the character at the current
   //          cursor.
-  int get_column() const {
-    return column;
-  }
+  int get_column() const ;
 
   //EFFECTS:  Returns the index of the character at the current cursor
   //          with respect to the entire contents. If the cursor is at
@@ -192,9 +124,7 @@ public:
   int get_index() const;
 
   //EFFECTS:  Returns the number of characters in the buffer.
-  int size() const{
-    return data.size();
-  }
+  int size() const;
 
   //EFFECTS:  Returns the contents of the text buffer as a string.
   //HINT: Implement this using the string constructor that takes a
@@ -221,14 +151,7 @@ private:
   //         row.
   //NOTE: This does not assume that the "column" member variable has
   //      a correct value (i.e. the second INVARIANT can be broken).
-  int compute_column() const {
-    Iterator tempCursor = cursor;
-    int tempColumn = 0;
-    while (tempCursor != data.begin() && *(--tempCursor) != '\n'){
-      tempColumn++;
-    }
-    return tempColumn;
-}
+  int compute_column() const;
 
 };
 #endif  //TEXTBUFFER_HPP
