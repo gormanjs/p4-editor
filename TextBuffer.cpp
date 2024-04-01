@@ -23,7 +23,7 @@ bool TextBuffer::backward() {
     if (cursor == data.begin()){
       return false;
     }
-    if (*cursor == '\n'){
+    if (*cursor == '\n' || column == 0){
       cursor--;
       row--;
       index--;
@@ -37,6 +37,7 @@ bool TextBuffer::backward() {
 
     return true;
 }
+
 
 void TextBuffer::insert(char c){
     if (c == '\n'){
@@ -101,8 +102,6 @@ void TextBuffer::move_to_row_end() {
 }
 
 void TextBuffer::move_to_column(int new_column){
-    assert(new_column >= 0);
-
     move_to_row_start();
 
     // Move the cursor to the specified column
@@ -111,6 +110,7 @@ void TextBuffer::move_to_column(int new_column){
     }
 }
 
+//compute column conflict of interest in up and backwards
 bool TextBuffer::up(){
     if (row == 1) {
         return false;
@@ -121,9 +121,8 @@ bool TextBuffer::up(){
 
     backward();
 
-    if (compute_column() < currentColumn) {
-        //move_to_row_end();
-        column = compute_column();
+    if (column < currentColumn) {
+        move_to_row_end();
     } else {
         move_to_column(currentColumn);
     }
@@ -189,15 +188,33 @@ std::string TextBuffer::stringify() const{
 }
 
 
+// int TextBuffer::compute_column() const {
+//     Iterator it = cursor;
+//     int tempColumn = 0; 
+//     while (it != data.begin() && *(--it) != '\n') {
+//         ++tempColumn;
+//     }
+//     if (*it != '\n') {
+//         ++tempColumn;
+//     }
+//     return tempColumn;
+// }
+
 int TextBuffer::compute_column() const {
     Iterator it = cursor;
-    int tempColumn = 0; 
+    int tempColumn = 0;
+
     while (it != data.begin() && *(--it) != '\n') {
         ++tempColumn;
+    }
+
+    if (it == data.begin()) {
+        return tempColumn;
     }
     if (*it != '\n') {
         ++tempColumn;
     }
+
     return tempColumn;
 }
 
