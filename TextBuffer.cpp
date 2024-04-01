@@ -23,14 +23,14 @@ bool TextBuffer::backward() {
     if (cursor == data.begin()){
       return false;
     }
-    if (*cursor == '\n' || column == 0){
-      cursor--;
+    if (column == 0){
+      --cursor;
       row--;
       index--;
       column = compute_column();
     }
     else {
-      cursor--;
+      --cursor;
       column--;
       index--;
     }
@@ -45,6 +45,7 @@ void TextBuffer::insert(char c){
         //cursor = data.insert(cursor, c);
         row++;
         column = 0;
+        ++cursor;
     }
     else if (cursor == data.end()) {
         data.push_back(c);
@@ -54,6 +55,7 @@ void TextBuffer::insert(char c){
     else {
         cursor = data.insert(cursor, c); 
         column++; 
+        ++cursor;
     }
 
     index++;
@@ -78,18 +80,21 @@ bool TextBuffer::remove(){
     return true;
   }
 
-void TextBuffer::move_to_row_start(){
-    Iterator it = cursor; 
-    while (it != data.begin() && *(--it) != '\n') {
-      index--;
+void TextBuffer::move_to_row_start() {
+    
+    while (cursor != data.begin() && *(--cursor) != '\n') {
+        --index;
     }
-    cursor = it;
+
+    
+    if (cursor != data.begin()) {
+        ++cursor;
+        ++index; 
+    }
+
     column = 0;
-    while (it != cursor) {
-        ++column;
-        ++it;
-    }
 }
+
 
 void TextBuffer::move_to_row_end() {
     if (cursor == data.end()) {
@@ -97,7 +102,9 @@ void TextBuffer::move_to_row_end() {
     }
 
     while (cursor != data.end() && *cursor != '\n') {
-        forward();
+        cursor++;
+        column++;
+        
     }
 }
 
@@ -123,6 +130,7 @@ bool TextBuffer::up(){
 
     if (column < currentColumn) {
         move_to_row_end();
+
     } else {
         move_to_column(currentColumn);
     }
@@ -130,7 +138,7 @@ bool TextBuffer::up(){
   }
 
 bool TextBuffer::down(){
-    if (row == size()) {
+    if (cursor == data.end()) {
         return false; 
     }
 
@@ -140,12 +148,12 @@ bool TextBuffer::down(){
 
     if (cursor != data.end()) {
         ++cursor;
+        ++row;
     }
 
-    ++row;
+    move_to_row_end();
 
     if (compute_column() < currentColumn) {
-        move_to_row_end();
         column = compute_column();
     } else {
         move_to_column(currentColumn);
@@ -217,4 +225,3 @@ int TextBuffer::compute_column() const {
 
     return tempColumn;
 }
-
