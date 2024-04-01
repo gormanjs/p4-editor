@@ -12,7 +12,9 @@ bool TextBuffer::forward() {
         row++;
         return true;
     } else {
+        cursor++;
         column++;
+        index++;
         return true;
     }
 }
@@ -21,135 +23,133 @@ bool TextBuffer::backward() {
     if (cursor == data.begin()){
       return false;
     }
-    --cursor;
-
     if (*cursor == '\n'){
+      cursor--;
       row--;
+      index--;
       column = compute_column();
     }
     else {
+      cursor--;
       column--;
+      index--;
     }
 
     return true;
 }
 
-//issue here
 void TextBuffer::insert(char c){
-    data.insert(cursor, c);
-
     if (c == '\n'){
-      //move to next row
-      row++;
-      column = 0;
+        data.insert(cursor, c);
+        //cursor = data.insert(cursor, c);
+        row++;
+        column = 0;
     }
-    if (cursor == data.end()) {
-        // Insert the character at the end of the buffer
+    else if (cursor == data.end()) {
         data.push_back(c);
         cursor = data.end();
+        column++;
     }
     else {
-      column++;
+        cursor = data.insert(cursor, c); 
+        column++; 
     }
 
-    //update position
     index++;
 }
 
 bool TextBuffer::remove(){
-    if (cursor == data.end()){
-      return false;
+    if (cursor == data.end()) {
+        return false;
     }
 
     cursor = data.erase(cursor);
 
-    // if the end of buffer or end of line
-    if (cursor != data.end() && *cursor == '\n'){
-      row--;
-      column = compute_column();
+    //if curser is a newline
+    if (cursor != data.end() && *cursor == '\n') {
+        row--;
+        column = compute_column();
+    } else {
+        if (*cursor != '\n') {
+            --index;
+        }
     }
-    else {
-      column--;
-    }
-    index--;
     return true;
   }
 
 void TextBuffer::move_to_row_start(){
+    Iterator it = cursor; 
+    while (it != data.begin() && *(--it) != '\n') {
+      index--;
+    }
+    cursor = it;
     column = 0;
+    while (it != cursor) {
+        ++column;
+        ++it;
+    }
 }
 
 void TextBuffer::move_to_row_end() {
-    if (cursor == data.end()){
-      return;
+    if (cursor == data.end()) {
+        return; 
     }
 
-    while (*cursor != '\n' && cursor != data.end()){
-      index++;
-      row++;
-      column++;
+    while (cursor != data.end() && *cursor != '\n') {
+        forward();
     }
-
-  }
+}
 
 void TextBuffer::move_to_column(int new_column){
     assert(new_column >= 0);
 
-    if (column < new_column){
-      move_to_row_end();
-    }
+    move_to_row_start();
 
-    else {
-      int amount = column - new_column;
-      for (int i = 0; i < amount; i++){
-        backward();
-      }
+    // Move the cursor to the specified column
+    for (int i = 0; i < new_column; ++i) {
+        forward();
     }
 }
 
 bool TextBuffer::up(){
-    if (row == 1){
-      return false;
+    if (row == 1) {
+        return false;
     }
 
-    //***This may cause issue
-    //compute previous row size
+    int currentColumn = column;
     move_to_row_start();
-    backward();
-    int prevRowLength = compute_column();
 
-    //compare
-    if (prevRowLength < column){
-      row--;
-      move_to_row_end();
-    }
-    else {
-      row--;
-      move_to_column(column);
+    backward();
+
+    if (compute_column() < currentColumn) {
+        //move_to_row_end();
+        column = compute_column();
+    } else {
+        move_to_column(currentColumn);
     }
     return true;
   }
 
 bool TextBuffer::down(){
-    if (is_at_end()){
-      return false;
+    if (row == size()) {
+        return false; 
     }
-    //i see what ur trying to do. yea just need to find a diff way
-   while (*cursor != '\n') {
-        forward();
+
+    //store orig column
+    int currentColumn = column;
+    move_to_row_end();
+
+    if (cursor != data.end()) {
+        ++cursor;
     }
-    forward();
 
-    row++;
+    ++row;
 
-    int nextRowLength = compute_column();
-
-    if (nextRowLength < column) {
-        // If next line is shorter, move to its end
+    if (compute_column() < currentColumn) {
         move_to_row_end();
+        column = compute_column();
     } else {
-        // Otherwise, move to the same column
-        move_to_column(column);
+        move_to_column(currentColumn);
     }
 
     return true;
@@ -191,9 +191,13 @@ std::string TextBuffer::stringify() const{
 
 int TextBuffer::compute_column() const {
     Iterator it = cursor;
-    int tempColumn = 0;
-    while (it != data.begin() && *(--it) != '\n'){
-      tempColumn++;
+    int tempColumn = 0; 
+    while (it != data.begin() && *(--it) != '\n') {
+        ++tempColumn;
+    }
+    if (*it != '\n') {
+        ++tempColumn;
     }
     return tempColumn;
 }
+
