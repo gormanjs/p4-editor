@@ -23,18 +23,13 @@ bool TextBuffer::backward() {
     if (cursor == data.begin()){
       return false;
     }
-    if (*cursor == '\n' || column == 0){
-      if (row == 1){
-        cursor--;
-        index--;
-        column = compute_column();
-      }
-      else {
+    if (column == 0)
+    { 
       cursor--;
       row--;
       index--;
       column = compute_column();
-      }
+      
     }
     else {
       cursor--;
@@ -47,9 +42,10 @@ bool TextBuffer::backward() {
 
 void TextBuffer::insert(char c){
     if (c == '\n'){
+        //insert after?
         data.insert(cursor, c);
+        column++;
         row++;
-        column = 0;
     }
     else if (cursor == data.end()) {
         data.push_back(c);
@@ -125,8 +121,8 @@ bool TextBuffer::up(){
 
     backward();
 
-    if (compute_column() < currentColumn) {
-        column = compute_column();
+    if (column < currentColumn) {
+        return true;
     } else {
         move_to_column(currentColumn);
     }
