@@ -53,6 +53,7 @@ public:
     if (empty())
     {
       first = last = newNode;
+      newNode = nullptr;
     }
     else
     {
@@ -72,6 +73,7 @@ public:
     if (empty())
     {
       first = last = newNode;
+      newNode = nullptr;
     }
     else
     {
@@ -89,13 +91,11 @@ public:
   {
     if (first == last)
     {
-      //deletefirst;
       first = last = nullptr;
     }
     else
     {
       Node *nextFirst = first->next;
-      //deletefirst;
       first = nextFirst;
       if (first){
       first->prev = nullptr;
@@ -128,11 +128,13 @@ public:
   // EFFECTS: removes all items from the list
   void clear()
   {
-    while (!empty())
+    while (first != nullptr)
     {
       Node* temp = first;
       first = first->next;
       delete temp;
+
+      temp = nullptr;
     }
     last = nullptr;
     track = 0;
@@ -362,7 +364,7 @@ public:
   // return an Iterator pointing to "past the end"
   Iterator end() const
   {
-    return Iterator(this, last->next);
+    return Iterator(this, nullptr);
   }
 
   // REQUIRES: i is a valid, dereferenceable iterator associated with this list
@@ -373,28 +375,27 @@ public:
   Iterator erase(Iterator i){
 
     Node* current = i.node_ptr;
+
+    if (!current) {
+        // If current is null, i points to end()
+        return i;
+    }
+
+    // Get the next iterator before removing current
     Iterator next(this, current->next);
 
-    //return end if current is null
-    if(!current){
-      return next;
+    if (current->prev) {
+        current->prev->next = current->next;
+    } else {
+        // If current is the first element
+        first = current->next;
     }
-    
-    // if the previous of current exists
-    if (current->prev){
-      // the previous's next is the currents next
-      current->prev->next = current->next;
-    }
-    else { // if the previous of current doesnt exist
-      // the current's next is the start
-      first = current->next;
-    }
-    
-    if (current->next){
-      current->next->prev = current->prev;
-    }
-    else {
-      last = current->prev;
+
+    if (current->next) {
+        current->next->prev = current->prev;
+    } else {
+        // If current is the last element
+        last = current->prev;
     }
 
     delete current;

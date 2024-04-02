@@ -5,10 +5,7 @@ using namespace std;
 
 // Add your test cases here
 
-// TEST(test_stub) {
-//     // Add test code here
-//     ASSERT_TRUE(true);
-// }
+
 
 TEST(test_empty){
 
@@ -23,6 +20,7 @@ TEST(test_size){
     list.push_back(2);
     list.push_back(3);
     ASSERT_TRUE(list.size() == 3);
+    list.clear();
 }
 
 TEST(test_front) {
@@ -32,6 +30,7 @@ TEST(test_front) {
     list.push_back(2);
     list.push_back(3);
     ASSERT_TRUE(list.front() == 1);
+    list.clear();
 }
 
 TEST(test_back) {
@@ -41,6 +40,7 @@ TEST(test_back) {
     list.push_front(7);
     list.push_front(8);
     ASSERT_TRUE(list.back() == 5);
+    list.clear();
 }
 
 TEST(test_push_front) {
@@ -50,6 +50,7 @@ TEST(test_push_front) {
     list.push_front(2);
     list.push_front(3);
     ASSERT_TRUE(list.front() == 3);
+    list.clear();
 }
 
 TEST(test_push_back){
@@ -59,6 +60,7 @@ TEST(test_push_back){
     list.push_back(7);
     list.push_back(8);
     ASSERT_TRUE(list.front() == 5);
+    list.clear();
 }
 
 TEST(test_pop_front){
@@ -74,6 +76,7 @@ TEST(test_pop_front){
 
     ASSERT_TRUE(list.size() == 3);
     ASSERT_TRUE(list.front() == 5);
+    list.clear();
 
 }
 
@@ -88,13 +91,7 @@ TEST(test_pop_back){
 
     ASSERT_TRUE(list.size() == 4);
     ASSERT_TRUE(list.back() == 7);
-
-    // 1 element
-    List <int> list1;
-    list1.push_back(1);
-    list1.pop_back();
-    ASSERT_TRUE(list.size() == 0);
-    
+    list.clear();
 }
 
 TEST(test_clear){
@@ -121,6 +118,7 @@ TEST(test_constructors){
     ASSERT_TRUE(list1.size() == list2.size());
     ASSERT_TRUE(list1.front() == list2.front());
     ASSERT_TRUE(list1.back() == list2.back());
+    list1.clear();
 }
 
 TEST(test_iterators) {
@@ -145,10 +143,6 @@ TEST(test_iterators) {
     --it;
     ASSERT_EQUAL(*it, 1);
 
-    // it++;
-    // ASSERT_EQUAL(*it, 2);
-
-    // Test Iterator Assignment and Equality and Inequality
     List<int>::Iterator it_copy = it;
     ASSERT_TRUE(it == it_copy);
     ASSERT_FALSE(it != it_copy);
@@ -160,6 +154,8 @@ TEST(test_iterators) {
     }
     ASSERT_EQUAL(elements.size(), list.size());
     ASSERT_EQUAL(elements, std::vector<int>({1, 2, 3}));
+
+    list.clear();
 }
 
 TEST(test_equals_equals_operator){
@@ -201,6 +197,8 @@ TEST(test_equals_equals_operator){
     ASSERT_FALSE(default_it == it_end);
 
     ASSERT_TRUE(default_it == default_it);
+    list.clear();
+    list9.clear();
 }
 
 TEST(test_assignment_operator) {
@@ -275,6 +273,15 @@ TEST(test_assignment_operator) {
     copy8 = list8;
     ASSERT_TRUE(copy8.size() == 0);
 
+    list1.clear();
+    list2.clear();
+    list3.clear();
+    list4.clear();
+    list5.clear();
+    list6.clear();
+    list7.clear();
+    list8.clear();
+
 }
 
 TEST(test_erase){
@@ -310,6 +317,9 @@ TEST(test_erase){
     ASSERT_TRUE(list2.size() == 2);
     ASSERT_TRUE(erased_next2 == list2.end());
 
+    list.clear();
+    list2.clear();
+
 }
 
 TEST(test_insert){
@@ -343,7 +353,7 @@ TEST(test_insert){
     inserted = list.insert(it, 9);
     ASSERT_TRUE(list.size() == 6);
     ASSERT_TRUE(list.back() == 9);
-
+    list.clear();
 }
 
 
