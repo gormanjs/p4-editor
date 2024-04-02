@@ -43,9 +43,10 @@ bool TextBuffer::backward() {
 void TextBuffer::insert(char c){
     if (c == '\n'){
         //insert after?
-        data.insert(cursor, c);
-        column++;
+        cursor = data.insert(cursor, c);
         row++;
+        cursor++;
+        column = 0;
     }
     else if (cursor == data.end()) {
         data.push_back(c);
@@ -202,6 +203,8 @@ int TextBuffer::compute_column() const {
     if (*it != '\n') {
         ++tempColumn;
     }
+        ++tempColumn;
+    
 
     return tempColumn;
 }
