@@ -23,14 +23,21 @@ bool TextBuffer::backward() {
     if (cursor == data.begin()){
       return false;
     }
-    if (column == 0){
-      --cursor;
+    if (*cursor == '\n' || column == 0){
+      if (row == 1){
+        cursor--;
+        index--;
+        column = compute_column();
+      }
+      else {
+      cursor--;
       row--;
       index--;
       column = compute_column();
+      }
     }
     else {
-      --cursor;
+      cursor--;
       column--;
       index--;
     }
@@ -38,14 +45,11 @@ bool TextBuffer::backward() {
     return true;
 }
 
-
 void TextBuffer::insert(char c){
     if (c == '\n'){
         data.insert(cursor, c);
-        //cursor = data.insert(cursor, c);
         row++;
         column = 0;
-        ++cursor;
     }
     else if (cursor == data.end()) {
         data.push_back(c);
@@ -55,7 +59,6 @@ void TextBuffer::insert(char c){
     else {
         cursor = data.insert(cursor, c); 
         column++; 
-        ++cursor;
     }
 
     index++;
@@ -80,21 +83,18 @@ bool TextBuffer::remove(){
     return true;
   }
 
-void TextBuffer::move_to_row_start() {
-    
-    while (cursor != data.begin() && *(--cursor) != '\n') {
-        --index;
+void TextBuffer::move_to_row_start(){
+    Iterator it = cursor; 
+    while (it != data.begin() && *(--it) != '\n') {
+      index--;
     }
-
-    
-    if (cursor != data.begin()) {
-        ++cursor;
-        ++index; 
-    }
-
+    cursor = it;
     column = 0;
+    while (it != cursor) {
+        ++column;
+        ++it;
+    }
 }
-
 
 void TextBuffer::move_to_row_end() {
     if (cursor == data.end()) {
@@ -102,9 +102,7 @@ void TextBuffer::move_to_row_end() {
     }
 
     while (cursor != data.end() && *cursor != '\n') {
-        cursor++;
-        column++;
-        
+        forward();
     }
 }
 
@@ -117,7 +115,6 @@ void TextBuffer::move_to_column(int new_column){
     }
 }
 
-//compute column conflict of interest in up and backwards
 bool TextBuffer::up(){
     if (row == 1) {
         return false;
@@ -128,9 +125,8 @@ bool TextBuffer::up(){
 
     backward();
 
-    if (column < currentColumn) {
-        move_to_row_end();
-
+    if (compute_column() < currentColumn) {
+        column = compute_column();
     } else {
         move_to_column(currentColumn);
     }
@@ -138,7 +134,7 @@ bool TextBuffer::up(){
   }
 
 bool TextBuffer::down(){
-    if (cursor == data.end()) {
+    if (row == size()) {
         return false; 
     }
 
@@ -148,12 +144,12 @@ bool TextBuffer::down(){
 
     if (cursor != data.end()) {
         ++cursor;
-        ++row;
     }
 
-    move_to_row_end();
+    ++row;
 
     if (compute_column() < currentColumn) {
+        move_to_row_end();
         column = compute_column();
     } else {
         move_to_column(currentColumn);
@@ -195,18 +191,6 @@ std::string TextBuffer::stringify() const{
     return std::string(data.begin(), data.end());
 }
 
-
-// int TextBuffer::compute_column() const {
-//     Iterator it = cursor;
-//     int tempColumn = 0; 
-//     while (it != data.begin() && *(--it) != '\n') {
-//         ++tempColumn;
-//     }
-//     if (*it != '\n') {
-//         ++tempColumn;
-//     }
-//     return tempColumn;
-// }
 
 int TextBuffer::compute_column() const {
     Iterator it = cursor;
